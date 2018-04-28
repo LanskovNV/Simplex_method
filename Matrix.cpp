@@ -46,13 +46,14 @@ Matrix & Matrix::operator=(const Matrix & m)
 {
   if (row != m.getRowCnt() || col != m.getColCnt())
   {
-    // if matrix has same size
-    row = m.getRowCnt();
-    col = m.getColCnt();
+    // if matrix has differtn size
 
     for (int rI = 0; rI < row; ++rI)
       delete[] data[rI];
     delete[] data;
+
+    row = m.getRowCnt();
+    col = m.getColCnt();
 
     data = new mT*[row];
     for (int rI = 0; rI < row; ++rI)

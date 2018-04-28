@@ -28,8 +28,8 @@ Vec & Vec::operator=(const Vec & v)
   if (size != v.getSize())
   {
     delete[] data;
-    data = new mT[size];
     size = v.getSize();
+    data = new mT[size];
   }
 
   for (int i = 0; i < size; ++i)
