@@ -25,9 +25,13 @@ Vec::Vec(const Vec & v)
 
 Vec & Vec::operator=(const Vec & v)
 {
-  delete[] data;
-  size = v.getSize();
-  data = new mT[size];
+  if (size != v.getSize())
+  {
+    delete[] data;
+    data = new mT[size];
+    size = v.getSize();
+  }
+
   for (int i = 0; i < size; ++i)
     data[i] = v[i];
   return (*this);

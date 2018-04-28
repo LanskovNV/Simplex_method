@@ -44,22 +44,33 @@ Matrix::~Matrix()
 
 Matrix & Matrix::operator=(const Matrix & m)
 {
-  for (int rI = 0; rI < row; ++rI)
+  if (row != m.getRowCnt() || col != m.getColCnt())
   {
-    delete[] data[rI];
+    // if matrix has same size
+    row = m.getRowCnt();
+    col = m.getColCnt();
+
+    for (int rI = 0; rI < row; ++rI)
+      delete[] data[rI];
+    delete[] data;
+
+    data = new mT*[row];
+    for (int rI = 0; rI < row; ++rI)
+    {
+      data[rI] = new mT[col];
+      for (int cI = 0; cI < col; ++cI)
+        data[rI][cI] = m[rI][cI];
+    }
   }
-  delete[] data;
-
-  row = m.getRowCnt();
-  col = m.getColCnt();
-
-  data = new mT*[row];
-  for (int rI = 0; rI < row; ++rI)
+  else
   {
-    data[rI] = new mT[col];
-    for (int cI = 0; cI < col; ++cI)
-      data[rI][cI] = m[rI][cI];
+    for (int rI = 0; rI < row; ++rI)
+    {
+      for (int cI = 0; cI < col; ++cI)
+        data[rI][cI] = m[rI][cI];
+    }
   }
+
   return (*this);
 }
 
