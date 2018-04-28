@@ -23,7 +23,7 @@ int main(void)
   for (int iRow = 0; iRow < mArows; ++iRow)
   {
     for (int iCol = 0; iCol < mAcols; ++iCol)
-      mAstream >> mA.data[iRow][iCol];
+      mAstream >> mA[iRow][iCol];
   }
   mAstream.close();
 
@@ -32,7 +32,7 @@ int main(void)
   Vec vB = Vec(vBRows);
   for (int iRow = 0; iRow < vBRows; ++iRow)
   {
-      vBstream >> vB.data[iRow];
+      vBstream >> vB[iRow];
   }
   vBstream.close();
 
@@ -41,7 +41,7 @@ int main(void)
   Vec vC = Vec(vCrows);
   for (int iRow = 0; iRow < vCrows; ++iRow)
   {
-    vCstream >> vC.data[iRow];
+    vCstream >> vC[iRow];
   }
   vCstream.close();
 
@@ -72,7 +72,7 @@ int main(void)
   // Check gotten solution to analyze domain
   for (int i = mA.getColCnt(); i < BasicE.getSize(); ++i)
   {
-    if (BasicE.data[i] > EPS)
+    if (BasicE[i] > EPS)
     {
       std::cout << "Domain is empty!" << std::endl;
       return 0;
@@ -82,7 +82,7 @@ int main(void)
   // Form initial X vector for original task
   Vec Basic(mA.getColCnt());
   for (int i = 0; i < mA.getColCnt(); ++i)
-    Basic.data[i] = BasicE.data[i];
+    Basic[i] = BasicE[i];
 
   Basic.Print("Basic");
 

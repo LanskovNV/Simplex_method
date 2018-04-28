@@ -75,7 +75,7 @@ Vec  Vec::VecMulMatrix(const IndexSet & iSetV, const Matrix & m)const
     {
       sum += data[ind] * m[mInd++][i];
     }
-    res.data[i] = sum;
+    res[i] = sum;
   }
   return res;
 }

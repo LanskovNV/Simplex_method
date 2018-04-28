@@ -36,7 +36,7 @@ void SimplexSolver::ExtendTask(const Matrix& mA, const Vec& vB, Vec & vCE, Matri
 
   // set initial basis
   for (int i = 0; i < mA.getRowCnt(); ++i)
-    vX0E[mA.getColCnt() + i] = vBN.data[i];
+    vX0E[mA.getColCnt() + i] = vBN[i];
 
   // set new goal vector
   for (int i = 0; i < mA.getRowCnt(); ++i)
