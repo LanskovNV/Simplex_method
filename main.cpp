@@ -66,6 +66,11 @@ int main(void)
    */
 
   Vec BasicE = SimplexSolver::Solve(vCE, mAE, vBN, vX0E);
+  if (BasicE[0] == -1)
+  {
+    cout << " Simplex Error!" << endl;
+    return 0;
+  }
   //BasicE.Print("Getted Basis: ");
 
 
@@ -74,7 +79,7 @@ int main(void)
   {
     if (BasicE[i] > EPS)
     {
-      std::cout << "Domain is empty!" << std::endl;
+      cout << "Domain is empty!" << endl;
       return 0;
     }
   }

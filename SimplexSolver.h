@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "Matrix.h"
 
-
+#define LOG_INITIAL_TASK
 #define LOG_XK
 #define LOG_BFS_INDS
 #define LOG_B_MATRIX

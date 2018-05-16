@@ -1,6 +1,7 @@
 #include "SimplexSolver.h"
 #include <iostream>
 
+using namespace std;
 
 void SimplexSolver::ExtendTask(const Matrix& mA, const Vec& vB, Vec & vCE, Matrix & mAE, Vec & vBN, Vec & vX0E)
 {
