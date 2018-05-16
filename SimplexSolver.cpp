@@ -195,7 +195,7 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 
     std::list<int>::iterator iterIndToChange;
 
-    bool bfsChanged = false;
+    bool changedBasis = false;
 
     IndexSet iSetTemp = vXcur.GetPositiveInds().GetInvertedSet(mA.getColCnt());//??????????????????????
     if (!degenterate || iSetTemp.data.size() == vU.ChoseNonPositive(iSetTemp).data.size())
@@ -231,11 +231,11 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
       addedInd = j;
 
     }
-    else
+    else // else -- cant calculate theta
     {
       std::cout << "$$$$$$$$ Changing Basis" << std::endl;
       iSetBFS.ChangeBasis(mA, iSetBFSPos, &removedInd, &addedInd, &changedIndRelativePos, vd);
-      bfsChanged = true;
+      changedBasis = true;
     }
 
 #ifdef LOG_IND_CHANGES
@@ -260,7 +260,7 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 
     mB = mF * mB;
 
-    if (!bfsChanged)
+    if (!changedBasis)
     {
       *iterIndToChange = j;
 #ifdef LOG_BFS_INDS
@@ -282,9 +282,9 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
       iSetBFS.Print("Next BFS:");
 #endif//LOG_BFS_INDS
       mB = mA.getInvertible(iSetFullRows, iSetBFS);
-    }
+    }// end of block after changing basis
     //mA.Print("is invertible to:", iSetBFS);
 
   }// Main LOOP end
 
-  }
+}
