@@ -47,12 +47,28 @@ void SimplexSolver::ExtendTask(const Matrix& mA, const Vec& vB, Vec & vCE, Matri
 Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const Vec& vX0)
 {
   int stepNum = 0;
+
+#ifdef LOG_INITIAL_TASK
+  cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl;
+  cout << "Initial task:" << endl;
+  mA.Print("Matrix A:");
+  vB.Print("Vector B:");
+  vC.Print("Target vector C:");
+  vX0.Print("Initial basic:");
+  cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl;
+#endif // LOG_INITIAL_TASK
+
+
+
   if (vC.getSize() != mA.getColCnt() || mA.getRowCnt() != vB.getSize())
   {
+#ifndef NO_LOG
     std::cout << "-------------------------------------------" << std::endl;
     std::cout << "Incorrect Dimensions. Simplex Ended" << std::endl << std::endl;
+#endif // !NO_LOG
+
     Vec err(1);
-    err[0] = -1;
+    err[0] = -1.0;
     return err;
   }
   IndexSet iSetBFS;
@@ -97,8 +113,12 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 
   for (;;)
   {
+    stepNum++;
+#if defined(LOG_XK) || defined(LOG_BFS_INDS) || defined(LOG_B_MATRIX) || defined(LOG_DK) || defined (LOG_THETA) || defined(LOG_VU) || defined(LOG_IND_CHANGES)
     std::cout << "___________________________________________" << std::endl;
-    std::cout << "Starting step no: " << stepNum++ << std::endl;
+    std::cout << "Starting step no: " << stepNum << std::endl;
+#endif // 
+
 
     vXcur = vXnext;
 #ifdef LOG_XK
@@ -117,27 +137,30 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 #endif // LOG_DK
 
     /*
-     *Check for Optimum
-     */
+    *Check for Optimum
+    */
     iSetVDNeg = vd.ChoseNegative(iSetAntiBFS);
     if (iSetVDNeg.data.size() == 0)
     {
       //if all components are positeve then current vec is optimal
+
+#ifndef NO_LOG
       std::cout << "-------------------------------------------" << std::endl;
-      std::cout << "Solution found. Simplex Ended" << std::endl << std::endl;
+      std::cout << "Solution found. Simplex Ended in " << stepNum - 1 << " steps" << std::endl << std::endl;
+#endif // !NO_LOG      
       return vXcur;
     }
 
     /*
-     * Create and fill vU vector
-     */
+    * Create and fill vU vector
+    */
     iSetj.data.clear();
     int j = iSetVDNeg.data.front();
     iSetj.data.push_back(j);
 
     mTemp = mB.MatrixMulMatrix(iSetFullRows, iSetj, mA); // chose full rows set because mB is square m x m matirx
 
-    mTemp.Print("Temp Matix for u:");
+                                                         //mTemp.Print("Temp Matix for u:");
 
     vU.SetZeros();
     int tempMInd = 0;
@@ -153,16 +176,19 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 
     if (iSetBFS.data.size() == vU.ChoseNonPositive(iSetBFS).data.size())
     {
+#ifndef NO_LOG
       std::cout << "-------------------------------------------" << std::endl;
       std::cout << "Unlimited. Simplex Ended" << std::endl << std::endl;
+#endif // !NO_LOG
+
       Vec err(1);
-      err[0] = -1;
+      err[0] = -1.0;
       return err;
     }
 
     /*
-     * Calculate Theta
-     */
+    * Calculate Theta
+    */
     int addedInd, removedInd;
     int changedIndRelativePos = 0;
     int minInd = -1;
@@ -207,13 +233,9 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
     }
     else
     {
-      std::cout << "$$$$$$$$ Changing Basis" << removedInd << std::endl;
-      iSetBFS.ChangeBasis(mA, iSetBFSPos, &removedInd, &addedInd, &changedIndRelativePos);
+      std::cout << "$$$$$$$$ Changing Basis" << std::endl;
+      iSetBFS.ChangeBasis(mA, iSetBFSPos, &removedInd, &addedInd, &changedIndRelativePos, vd);
       bfsChanged = true;
-
-#ifdef LOG_BFS_INDS
-      iSetBFS.Print("Changed Basis:");
-#endif//LOG_BFS_INDS
     }
 
 #ifdef LOG_IND_CHANGES
@@ -224,8 +246,8 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 
 
     /*
-     * Calculate new invertible
-     */
+    * Calculate new invertible
+    */
     Matrix mF = Matrix(mA.getRowCnt(), mA.getRowCnt());
     for (int i = 0; i < mF.getRowCnt(); ++i)
       mF[i][i] = 1.0;
@@ -245,9 +267,24 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
       iSetBFS.Print("Next BFS:");
 #endif//LOG_BFS_INDS
     }
-    // mA.Print("is invertible to:", iSetBFS);
+    else
+    {
+      std::list<int>::iterator iter = iSetBFS.data.begin();
+      for (; iter != iSetBFS.data.end(); iter++)
+      {
+        if (*iter == removedInd)
+        {
+          *iter = addedInd;
+          break;
+        }
+      }
+#ifdef LOG_BFS_INDS
+      iSetBFS.Print("Next BFS:");
+#endif//LOG_BFS_INDS
+      mB = mA.getInvertible(iSetFullRows, iSetBFS);
+    }
+    //mA.Print("is invertible to:", iSetBFS);
 
-    }// Main LOOP end
+  }// Main LOOP end
 
-    return vXcur;
   }

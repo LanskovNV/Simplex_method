@@ -2,6 +2,7 @@
 #include <list>
 
 class Matrix;
+class Vec;
 
 class IndexSet
 {
@@ -19,7 +20,7 @@ public:
   void Print(const char * s) const;
 
   void CompleteToSize(const Matrix &m);
-  void ChangeBasis(const Matrix &m, const IndexSet& iSetPos, int * removedInd, int * addedInd, int * removedIndPos);
+  void ChangeBasis(const Matrix &m, const IndexSet& iSetPos, int * removedInd, int * addedInd, int * removedIndPos, Vec &d);
   IndexSet GetInvertedSet(int size_) const;
 
   int GetSize() const

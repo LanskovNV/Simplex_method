@@ -1,6 +1,7 @@
 #include "IndexSet.h"
 #include <iostream>
 #include "Matrix.h"
+#include "Vec.h"
 
 IndexSet::IndexSet()
 {
@@ -61,6 +62,8 @@ void IndexSet::CompleteToSize(const Matrix & m)
   IndexSet part2 = IndexSet();
   IndexSet iSetFullRows = IndexSet(m.getRowCnt());
   do {
+    part1.data.clear();
+    part1 = IndexSet(*this);
     part2.data.clear();
     for (int i = 0; i < toCompletecnt; ++i)
     {
@@ -75,7 +78,7 @@ void IndexSet::CompleteToSize(const Matrix & m)
     {
       for (int i = 0; i < toCompletecnt; ++i)
       {
-        data.push_back(indArr[indPosesInArr[0]]);
+        data.push_back(indArr[indPosesInArr[i]]);
       }
       delete indArr;
       delete indPosesInArr;
@@ -86,7 +89,7 @@ void IndexSet::CompleteToSize(const Matrix & m)
 }
 
 
-void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int * removedInd, int * addedInd, int * removedIndPos)
+void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int * removedInd, int * addedInd, int * removedIndPos, Vec& d)
 {
   IndexSet iSetOutter = (*this).GetInvertedSet(m.getColCnt());
   IndexSet iSetInner = IndexSet(*this);
@@ -98,6 +101,18 @@ void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int *
     iSetInner.data.remove(ind);
   }
 
+  iSetInner.data.sort();
+  iSetOutter.data.sort();
+
+  //iSetInner.Print("Inner");
+  //iSetOutter.Print("Outter");
+
+
+  //d.Print("WEIGHT:");
+  iSetOutter.data.remove_if([d](int ind) { return d[ind] >= 0; });
+
+  //iSetOutter.Print("Outter");
+
   int iSetOutterSize = iSetOutter.data.size();
   int iSetInnerSize = iSetInner.data.size();
   int *indOutterArr = new int[iSetOutterSize];
@@ -108,6 +123,8 @@ void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int *
   {
     indOutterArr[i++] = ind;
   }
+
+  int temp = indOutterArr[0];
   i = 0;
   for (auto ind : iSetInner.data)
   {
@@ -124,7 +141,7 @@ void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int *
   {
     iSetTest.data.remove(indInnerArr[indPosI]);
     iSetTest.data.push_back(indOutterArr[indPosO]);
-
+    // iSetTest.Print("Try:");
     if (m.FullRang(iSetFullRows, iSetTest))
     {
       std::list<int>::iterator iter = data.begin();
@@ -132,7 +149,7 @@ void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int *
       {
         if (*iter == indInnerArr[indPosI])
         {
-          *iter = indOutterArr[indPosO];
+          //*iter = indOutterArr[indPosO];
           break;
         }
         changedIndRelativePos++;
@@ -140,10 +157,13 @@ void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int *
       *removedInd = indInnerArr[indPosI];
       *addedInd = indOutterArr[indPosO];
       *removedIndPos = changedIndRelativePos;
+
       delete indOutterArr;
       delete indInnerArr;
+
       return;
     }
+    //revert changes
     iSetTest.data.remove(indOutterArr[indPosO]);
     iSetTest.data.push_back(indInnerArr[indPosI]);
 
@@ -161,14 +181,16 @@ void IndexSet::ChangeBasis(const Matrix & m, const IndexSet& iSetPositive, int *
 
 
 
+
 IndexSet IndexSet::GetInvertedSet(int size_) const
 {
   int num = 0;
-  std::list<int>::const_iterator it = data.cbegin();
+  IndexSet temp(*this);
+  temp.data.sort();
+  std::list<int>::const_iterator it = temp.data.cbegin();
   IndexSet res;
 
-  //data.sort();
-  while (it != data.end() && num < size_)
+  while (it != temp.data.end() && num < size_)
   {
     if (num < *it)
       res.data.push_back(num);
@@ -177,7 +199,7 @@ IndexSet IndexSet::GetInvertedSet(int size_) const
     num++;
   }
 
-  if (it == data.end())
+  if (it == temp.data.end())
     while (num < size_)
       res.data.push_back(num++);
 
