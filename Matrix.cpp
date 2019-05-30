@@ -2,6 +2,8 @@
 #define EPS 1e-6
 #include <iostream>
 #include <iomanip>
+#include <cmath>
+
 using namespace std;
 Matrix::Matrix()
 {

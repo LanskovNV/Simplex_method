@@ -11,9 +11,9 @@ int main(void)
   /*
    *Read Task from file
    */
-  ifstream mAstream("tasks/mA.txt");
-  ifstream vBstream("tasks/vB.txt");
-  ifstream vCstream("tasks/vC.txt");
+  ifstream mAstream("tasks/transp_mC.txt");
+  ifstream vBstream("tasks/transp_vA.txt");
+  ifstream vCstream("tasks/transp_vB.txt");
 
   int mArows, mAcols;
   mAstream >> mArows;
