@@ -103,14 +103,14 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 
   Vec vXcur(vX0);
   Vec vXnext(vX0);
-  Vec vd;
+  Vec vd(vC.getSize());
 
   Vec vU(mA.getColCnt());
 
   IndexSet iSetj;
   IndexSet iSetVDNeg;
 
-  Matrix mTemp;
+  Matrix mTemp(mA.getRowCnt(), mA.getColCnt());
 
   for (;;)
   {
@@ -160,7 +160,6 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
     iSetj.data.push_back(j);
 
     mTemp = mB.MatrixMulMatrix(iSetFullRows, iSetj, mA); // chose full rows set because mB is square m x m matirx
-
                                                          //mTemp.Print("Temp Matix for u:");
 
     vU.SetZeros();
