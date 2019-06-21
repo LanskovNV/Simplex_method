@@ -39,7 +39,8 @@ Matrix::~Matrix()
 {
   for (int rI = 0; rI < row; ++rI)
   {
-    delete[] data[rI];
+      if (col != 0)
+        delete[] data[rI];
   }
   delete[] data;
 }
@@ -300,6 +301,8 @@ Matrix Matrix::getInvertible(const IndexSet& iSetRows, const IndexSet& iSetCols)
       res[iRow][iCol] = m[iRow][iCol + colCnt / 2];
     }
   }
+
+  cout << "hello" << endl;
 
   return res;
 }

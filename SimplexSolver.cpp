@@ -6,10 +6,6 @@ using namespace std;
 void SimplexSolver::ExtendTask(const Matrix& mA, const Vec& vB, Vec & vCE, Matrix & mAE, Vec & vBN, Vec & vX0E)
 {
   mAE = Matrix(mA.getRowCnt(), mA.getColCnt() + mA.getRowCnt());
-  vCE = Vec(mA.getColCnt() + mA.getRowCnt());
-  vBN = vB;
-  vX0E = Vec(mA.getColCnt() + mA.getRowCnt());
-
 
   // copy main part of "A" matrix to new matrix
   for (int rI = 0; rI < mA.getRowCnt(); ++rI)
@@ -98,8 +94,8 @@ Vec SimplexSolver::Solve(const Vec& vC, const Matrix& mA, const Vec& vB, const V
 #ifdef LOG_B_MATRIX
   mA.Print("A matrix BFS:", iSetBFS);
 #endif //LOG_B_MATRIX
-
-  Matrix mB = mA.getInvertible(iSetFullRows, iSetBFS);
+  Matrix mB(mA.getRowCnt(), mA.getColCnt());
+  mB = mA.getInvertible(iSetFullRows, iSetBFS);
 
   Vec vXcur(vX0);
   Vec vXnext(vX0);

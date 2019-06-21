@@ -53,7 +53,9 @@ int main(void)
    * Create additional extended task to find initial X vector for original task
    */
   Matrix mAE(mA.getRowCnt(), mA.getColCnt());
-  Vec vCE, vBN, vX0E;
+  Vec vCE(mA.getColCnt() + mA.getRowCnt()),
+    vBN(vB.getSize()),
+    vX0E(mA.getColCnt() + mA.getRowCnt());
 
   SimplexSolver::ExtendTask(mA, vB, vCE, mAE, vBN, vX0E);
   mAE.Print("Ext A:");
