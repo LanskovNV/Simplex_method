@@ -220,6 +220,11 @@ Matrix Matrix::getInvertible(const IndexSet& iSetRows, const IndexSet& iSetCols)
 
   Matrix m(rowCnt, colCnt);
 
+  if (iSetCols.GetSize() != iSetRows.GetSize())
+  {
+    cout << "Matrix is not square!!!" << endl;
+    return m;
+  }
   std::list<int>::const_iterator iterCol = iSetCols.data.cbegin();
   std::list<int>::const_iterator iterRow = iSetRows.data.cbegin();
 
@@ -301,8 +306,6 @@ Matrix Matrix::getInvertible(const IndexSet& iSetRows, const IndexSet& iSetCols)
       res[iRow][iCol] = m[iRow][iCol + colCnt / 2];
     }
   }
-
-  cout << "hello" << endl;
 
   return res;
 }

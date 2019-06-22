@@ -6,6 +6,7 @@ using namespace std;
 void SimplexSolver::ExtendTask(const Matrix& mA, const Vec& vB, Vec & vCE, Matrix & mAE, Vec & vBN, Vec & vX0E)
 {
   mAE = Matrix(mA.getRowCnt(), mA.getColCnt() + mA.getRowCnt());
+  vBN = vB;
 
   // copy main part of "A" matrix to new matrix
   for (int rI = 0; rI < mA.getRowCnt(); ++rI)
